@@ -1,13 +1,13 @@
-import * as fs from 'fs';
-import { pascalCase, camelCase } from 'change-case';
-import { formatSchema } from '@prisma/sdk';
-import { log, singularize } from './utils/helper';
+import * as fs from "fs";
+import { pascalCase, camelCase } from "change-case";
+import { formatSchema } from "@prisma/sdk";
+import { singularize } from "./utils/helper";
 
 export class FixPrismaFile {
   static instance: FixPrismaFile;
   private prismaFilePath: string;
 
-  PRISMA_PRIMITIVES = ['String', 'Boolean', 'Int', 'Float', 'DateTime'];
+  PRISMA_PRIMITIVES = ["String", "Boolean", "Int", "Float", "DateTime"];
 
   static getInstance(prismaFilePath: string) {
     if (FixPrismaFile.instance) {
@@ -27,9 +27,9 @@ export class FixPrismaFile {
 
   fixFieldsArrayString(fields: string) {
     return fields
-      .split(', ')
+      .split(", ")
       .map((field) => camelCase(field))
-      .join(', ');
+      .join(", ");
   }
 
   fixModelName(string: string) {
@@ -50,7 +50,7 @@ export class FixPrismaFile {
 
   pushIfnotExist(array: any[], searchArr: any[], substring: string) {
     const match = searchArr.find((element) => {
-      if (element.indexOf('@@map') !== -1) {
+      if (element.indexOf("@@map") !== -1) {
         return true;
       }
     });
@@ -60,9 +60,9 @@ export class FixPrismaFile {
   }
 
   run = async () => {
-    const text = fs.readFileSync(this.prismaFilePath, 'utf8');
+    const text = fs.readFileSync(this.prismaFilePath, "utf8");
 
-    const textAsArray = text.split('\n');
+    const textAsArray = text.split("\n");
 
     const fixedText = [];
     let currentModelName: string | null = null;
@@ -87,15 +87,15 @@ export class FixPrismaFile {
       }
 
       // Add the @@map to the table name for the model
-      if (!hasAddedModelMap && (line.match(/\s+@@/) || line === '}')) {
-        if (line === '}') {
-          fixedText.push('');
+      if (!hasAddedModelMap && (line.match(/\s+@@/) || line === "}")) {
+        if (line === "}") {
+          fixedText.push("");
         }
         // fixedText.push(`  @@map("${currentModelName}")`)
         this.pushIfnotExist(
           fixedText,
           textAsArray,
-          `  @@map("${currentModelName}")`,
+          `  @@map("${currentModelName}")`
         );
         hasAddedModelMap = true;
       }
@@ -123,7 +123,7 @@ export class FixPrismaFile {
         // Add map if we needed to convert the field name and the field is not a relational type
         // If it's relational, the field type will be a non-primitive, hence the isPrimitiveType check
         if (
-          currentFieldName.includes('_') &&
+          currentFieldName.includes("_") &&
           this.isPrimitiveType(currentFieldType)
         ) {
           fixedLine = `${fixedLine} @map("${currentFieldName}")`;
@@ -138,7 +138,7 @@ export class FixPrismaFile {
         const fixedFieldType = this.fixFieldTypeName(currentFieldType);
         const startOfLine = fixedLine.substr(0, fieldTypeIndex);
         const restOfLine = fixedLine.substr(
-          fieldTypeIndex + currentFieldType.length,
+          fieldTypeIndex + currentFieldType.length
         );
         fixedLine = `${startOfLine}${fixedFieldType}${restOfLine}`;
       }
@@ -149,7 +149,7 @@ export class FixPrismaFile {
         const fields = relationFieldsMatch[1];
         fixedLine = fixedLine.replace(
           `[${fields}]`,
-          `[${this.fixFieldsArrayString(fields)}]`,
+          `[${this.fixFieldsArrayString(fields)}]`
         );
       }
 
@@ -166,7 +166,7 @@ export class FixPrismaFile {
         const fields = indexUniqueFieldsMatch[1];
         fixedLine = fixedLine.replace(
           fields,
-          this.fixFieldsArrayString(fields),
+          this.fixFieldsArrayString(fields)
         );
       }
 
@@ -174,7 +174,7 @@ export class FixPrismaFile {
     }
     fs.writeFileSync(
       this.prismaFilePath,
-      await formatSchema({ schema: fixedText.join('\n') }),
+      await formatSchema({ schema: fixedText.join("\n") })
     );
   };
 }
