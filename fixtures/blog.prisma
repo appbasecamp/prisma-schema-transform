@@ -1,0 +1,86 @@
+datasource postgresql {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "node_modules/@prisma/client"
+}
+
+model posts {
+  id                              Int      @default(autoincrement()) @id
+  similar                         String?
+  user_id                         Int
+  post_type                       Int       @default(1)
+  share_type                      Int       @default(1)
+  post_title                      String?
+  post                            String?
+  keyword                         String?
+  categories                      Int?
+  sub_categories                  Int?
+  latitude                        Float?
+  longitude                       Float?
+  feeling                         Int?      @default(0)
+  background                      String?
+  status             Int          @default(1)
+  created_at         DateTime?    @default(now())
+  updated_at         DateTime?    
+  deleted_at         DateTime?
+  users                           users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+
+model users {
+  id                 Int      @default(autoincrement()) @id
+  account_role       account_role
+  account_state      Int          @default(1)
+  regist_state       Int          @default(1)
+  email              String?      @unique
+  email_verified     Boolean      @default(false)
+  phone              String?      
+  phone_verified     Boolean      @default(false)
+  password_hash      String?      
+  display_name       String       
+  first_name         String       
+  last_name          String       
+  middle_name        String?      
+  username           String       @unique
+  avatar             String
+  last_sign_in_at    DateTime?    
+  sign_in_count      Int?         @default(0)
+  sign_in_status     Int?         @default(1)
+  sign_in_ip_address Int?
+  sign_in_ip_host    String?
+  invited_at         DateTime?    
+  locale             String?      @default(dbgenerated("'en-US'::text"))
+  language_code      String?      @default(dbgenerated("'en'::text"))
+  latitude           Float?
+  longitude          Float?
+  timezone           String?      @default(dbgenerated("'UTC'::text"))
+  android_token      String?      
+  ios_token          String?      
+  user_agent         String?
+  ip_address         Int?
+  ip_host            String?
+  ip_address_update  Int?
+  ip_host_update     String?
+  ip_address_delete  Int?
+  ip_host_delete     String?
+  status             Int          @default(1)
+  created_at         DateTime?    @default(now()) 
+  updated_at         DateTime?    
+  deleted_at         DateTime?    
+  posts              posts[]
+}
+
+enum account_role {
+  anonymous
+  user
+  api_user
+  editor
+  visitor
+  admin
+  super_admin
+}
+

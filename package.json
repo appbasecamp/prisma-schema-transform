@@ -1,0 +1,51 @@
+{
+  "name": "prisma-schema-transform",
+  "description": "Transform names from snake_case to camelCase in Prisma schema and change plural to singular.",
+  "version": "0.0.1",
+  "repository": "https://github.com/appbasecamp/prisma-schema-transform",
+  "author": {
+    "name": "Nymul Islam",
+    "email": "nymul@infoinlet.com",
+    "url": "https://appbase.camp"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "bin": {
+    "prisma-schema-transform": "bin.js"
+  },
+  "files": [
+    "dist",
+    "bin.js"
+  ],
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
+    "dev": "node -r ts-node/register src/index.ts",
+    "build": "tsc -p .",
+    "start": "npm run build -- -w"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.12.0",
+    "@prisma/engine-core": "^3.12.0",
+    "@prisma/generator-helper": "^3.12.0",
+    "@prisma/sdk": "^3.12.0",
+    "change-case": "^4.1.2",
+    "prettier": "2.5.1",
+    "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.6.2",
+    "@types/pluralize": "^0.0.29",
+    "@types/prettier": "2.4.3",
+    "swagger-ui-express": "^4.1.6",
+    "ts-node": "^10.2.1",
+    "ts-node-dev": "^1.1.8",
+    "tsc": "^2.0.4",
+    "typescript": "^4.5.5"
+  },
+  "_moduleAliases": {
+    "@src": "dist"
+  }
+}
